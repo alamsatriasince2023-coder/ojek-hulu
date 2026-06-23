@@ -83,6 +83,18 @@
   </div>
 </div>
 
+    <input id="in-jarak" type="number" placeholder="Estimasi Jarak (KM)" class="w-full bg-slate-100 p-3 rounded-xl text-sm" oninput="hitungHarga()">
+<div id="estimasi-harga" class="text-sm font-bold text-green-700">Estimasi: Rp 0</div>
+
+
+    <div class="mt-8">
+  <h3 class="font-bold text-lg mb-3">Riwayat Pesanan Saya</h3>
+  <div id="list-riwayat-saya" class="space-y-3">
+    <p class="text-sm text-slate-400">Masukkan nomor HP untuk melihat riwayat...</p>
+  </div>
+</div>
+
+
 
     <!-- Panel Driver -->
     <div id="panel-driver" class="hidden">
@@ -133,6 +145,48 @@
       }
     });
 
+    window.hitungHarga = () => {
+  const jarak = parseFloat($('#in-jarak').value) || 0;
+  const tarif = 5000 + (jarak * 3000);
+  $('#estimasi-harga').textContent = `Estimasi: ${fmtRp(tarif)}`;
+  return tarif;
+};
+
+// Saat kirim data, simpan estimasi tersebut
+$('#form-pesan').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const harga = hitungHarga(); // Ambil harga hasil hitung
+  const orderData = {
+    // ... data lainnya
+    estimasi: harga 
+  };
+  // ... lanjut ke supabase insert
+});
+
+ // Inisialisasi objek suara
+const sound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'); // Ganti dengan URL file mp3 Anda
+
+function playNotif() {
+  sound.play().catch(e => console.log("User belum berinteraksi, suara tidak bisa diputar supabase.channel('orders')
+  .on('postgres_changes', { 
+    event: 'INSERT', // Hanya bunyi saat ada order baru
+    schema: 'public', 
+    table: 'orders' 
+  }, (payload) => {
+    playNotif(); // Panggil fungsi suara
+    renderDriverOrders(); // Refresh tampilan driver
+    alert("Ada order baru!"); // Notifikasi visual tambahan
+  })
+  .subscribe();
+
+  sound.loop = true; // Akan terus bunyi sampai diberhentikan
+
+  sound.pause();
+sound.currentTime = 0;
+
+    
+
+
     async function renderDriverOrders() {
       const { data } = await supabase.from('orders').select('*').eq('status', 'baru').order('created_at', { ascending: false });
       const drvPanel = $('#drv-panel-order');
@@ -151,6 +205,58 @@
     supabase.channel('orders').on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
       renderDriverOrders();
     }).subscribe();
+
+   // Tambahkan fungsi untuk memuat riwayat berdasarkan HP
+async function loadRiwayat() {
+  const hpInput = $('#in-hp').value;
+  if (!hpInput) return;
+
+  const { data } = await supabase
+    .from('orders')
+    .select('*')
+    .eq('hp', hpInput)
+    .order('created_at', { ascending: false });
+
+  const listRiwayat = $('#list-riwayat-saya');
+  if (listRiwayat && data) {
+    listRiwayat.innerHTML = data.map(o => `
+      <div class="bg-white p-4 rounded-2xl border shadow-sm flex justify-between items-center">
+        <div>
+          <p class="font-bold text-sm">${o.jemput} ➔ ${o.tujuan}</p>
+          <p class="text-xs text-slate-500 capitalize">Status: ${o.status}</p>
+        </div>
+        <div class="text-xs font-bold ${o.status === 'selesai' ? 'text-green-600' : 'text-amber-600'}">
+          ${o.status.toUpperCase()}
+        </div>
+      </div>
+    `).join('') || '<p class="text-sm text-slate-400">Belum ada riwayat pesanan.</p>';
+
+    // Fungsi untuk membatalkan pesanan
+window.batalkanOrder = async (id) => {
+  if (!confirm("Yakin ingin membatalkan pesanan ini?")) return;
+  
+  const { error } = await supabase.from('orders').update({ status: 'batal' }).eq('id', id);
+  if (!error) {
+    alert("Pesanan dibatalkan.");
+    loadRiwayat(); // Refresh list
+  }
+};
+
+// Update bagian map di loadRiwayat agar tombol batal muncul
+// ... di dalam .map(o => ...
+// Ganti bagian status dengan ini:
+`<div class="text-xs">
+    Status: ${o.status.toUpperCase()}
+    ${o.status === 'baru' ? `<button onclick="batalkanOrder('${o.id}')" class="ml-2 text-red-600 font-bold underline">Batalkan</button>` : ''}
+</div>`
+
+  }
+}
+
+// Panggil loadRiwayat saat input HP selesai diisi atau saat tombol pesan ditekan
+$('#in-hp').addEventListener('blur', loadRiwayat);
+
+    
   </script>
 </body>
 </html>
