@@ -9,6 +9,41 @@
 <body class="bg-slate-50">
   <main class="max-w-xl mx-auto p-4">
     <h1 class="text-2xl font-bold mb-4">Ojek Hulu</h1>
+
+    <div id="panel-pelanggan" class="bg-slate-50 min-h-screen">
+  <div class="bg-white p-4 m-4 rounded-2xl shadow-sm border flex justify-between items-center">
+    <div>
+      <p class="text-xs text-gray-500">Saldo Anda</p>
+      <h2 class="font-bold text-lg">Rp 50.000</h2>
+    </div>
+    <div class="flex gap-3 text-center text-xs">
+      <div>➕<br>Top Up</div>
+      <div>🛡️<br>Pay</div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-4 gap-4 px-4 mb-6">
+    <div class="text-center font-medium text-sm">🛵<br>Ride</div>
+    <div class="text-center font-medium text-sm">🚗<br>Car</div>
+    <div class="text-center font-medium text-sm">🍔<br>Food</div>
+    <div class="text-center font-medium text-sm">📦<br>Send</div>
+  </div>
+
+  <div class="p-4 bg-white mx-4 rounded-2xl border shadow-sm">
+    <h3 class="font-bold mb-3">Mau ke mana hari ini?</h3>
+    <form id="form-pesan" class="space-y-3">
+      <input id="in-jemput" placeholder="📍 Lokasi jemput" class="w-full bg-slate-100 p-3 rounded-xl text-sm" required>
+      <input id="in-tujuan" placeholder="🏁 Lokasi tujuan" class="w-full bg-slate-100 p-3 rounded-xl text-sm" required>
+      <input id="in-nama" placeholder="Nama Anda" class="w-full bg-slate-100 p-3 rounded-xl text-sm" required>
+      <input id="in-hp" placeholder="No HP/WA" class="w-full bg-slate-100 p-3 rounded-xl text-sm" required>
+      <button id="btn-pesan" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold mt-2 hover:bg-green-700 transition">Pesan Ojek</button>
+    </form>
+  </div>
+</div>
+
+
+
+
     
     <!-- Navigasi Mode -->
     <div class="flex gap-2 mb-6">
@@ -17,17 +52,37 @@
     </div>
 
     <!-- Panel Pelanggan -->
-    <div id="panel-pelanggan">
-      <h2 class="font-bold mb-2">Pesan Ojek</h2>
-      <form id="form-pesan" class="bg-white p-4 rounded-2xl shadow-sm space-y-3">
-        <input id="in-nama" placeholder="Nama Anda" class="w-full border p-2 rounded-xl" required>
-        <input id="in-hp" placeholder="No HP" class="w-full border p-2 rounded-xl" required>
-        <input id="in-jemput" placeholder="Titik Jemput" class="w-full border p-2 rounded-xl" required>
-        <input id="in-tujuan" placeholder="Tujuan" class="w-full border p-2 rounded-xl" required>
-        <button id="btn-pesan" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold">Pesan Sekarang</button>
-      </form>
-      <div id="list-pesanan-saya" class="mt-4 space-y-2"></div>
+    <div id="panel-pelanggan" class="bg-slate-50 min-h-screen">
+  <div class="bg-white p-4 m-4 rounded-2xl shadow-sm border flex justify-between items-center">
+    <div>
+      <p class="text-xs text-gray-500">Saldo Anda</p>
+      <h2 class="font-bold text-lg">Rp 50.000</h2>
     </div>
+    <div class="flex gap-3 text-center text-xs">
+      <div>➕<br>Top Up</div>
+      <div>🛡️<br>Pay</div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-4 gap-4 px-4 mb-6">
+    <div class="text-center font-medium text-sm">🛵<br>Ride</div>
+    <div class="text-center font-medium text-sm">🚗<br>Car</div>
+    <div class="text-center font-medium text-sm">🍔<br>Food</div>
+    <div class="text-center font-medium text-sm">📦<br>Send</div>
+  </div>
+
+  <div class="p-4 bg-white mx-4 rounded-2xl border shadow-sm">
+    <h3 class="font-bold mb-3">Mau ke mana hari ini?</h3>
+    <form id="form-pesan" class="space-y-3">
+      <input id="in-jemput" placeholder="📍 Lokasi jemput" class="w-full bg-slate-100 p-3 rounded-xl text-sm" required>
+      <input id="in-tujuan" placeholder="🏁 Lokasi tujuan" class="w-full bg-slate-100 p-3 rounded-xl text-sm" required>
+      <input id="in-nama" placeholder="Nama Anda" class="w-full bg-slate-100 p-3 rounded-xl text-sm" required>
+      <input id="in-hp" placeholder="No HP/WA" class="w-full bg-slate-100 p-3 rounded-xl text-sm" required>
+      <button id="btn-pesan" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold mt-2 hover:bg-green-700 transition">Pesan Ojek</button>
+    </form>
+  </div>
+</div>
+
 
     <!-- Panel Driver -->
     <div id="panel-driver" class="hidden">
