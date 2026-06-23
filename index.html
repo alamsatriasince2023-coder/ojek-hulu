@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ojek Hulu Putussibau</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50">
+  <main class="max-w-xl mx-auto p-4">
+    <h1 class="text-2xl font-bold mb-4">Ojek Hulu</h1>
+    
+    <!-- Form Pesan -->
+    <form id="form-pesan" class="bg-white p-4 rounded-2xl shadow-sm space-y-3">
+      <input id="in-nama" placeholder="Nama Anda" class="w-full border p-2 rounded-xl" required>
+      <input id="in-hp" placeholder="No HP" class="w-full border p-2 rounded-xl" required>
+      <input id="in-jemput" placeholder="Titik Jemput" class="w-full border p-2 rounded-xl" required>
+      <input id="in-tujuan" placeholder="Tujuan" class="w-full border p-2 rounded-xl" required>
+      <button id="btn-pesan" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold">Pesan Sekarang</button>
+    </form>
+
+    <div id="list-pesanan-saya" class="mt-4 space-y-2"></div>
+    <div id="drv-panel-order" class="mt-4 space-y-2"></div>
+  </main>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+    const SUPABASE_URL = "ISI_URL_SUPABASE_ANDA";
+    const SUPABASE_KEY = "ISI_ANON_KEY_ANDA";
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const $ = (s) => document.querySelector(s);
+
+    $('#form-pesan').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const { error } = await supabase.from('orders').insert([{
+        nama: $('#in-nama').value,
+        hp: $('#in-hp').value,
+        jemput: $('#in-jemput').value,
+        tujuan: $('#in-tujuan').value,
+        status: 'baru'
+      }]);
+      if (!error) alert('Pesanan terkirim!');
+    });
+
+    async function render() {
+      const { data } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
+      if ($('#list-pesanan-saya')) {
+        $('#list-pesanan-saya').innerHTML = data.map(o => `<div class="bg-white p-3 rounded-xl">${o.jemput} ➔ ${o.tujuan} (${o.status})</div>`).join('');
+      }
+    }
+
+    supabase.channel('orders').on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, render).subscribe();
+    render();
+  </script>
+</body>
+</html>
