@@ -53,6 +53,62 @@
 
     supabase.channel('orders').on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, render).subscribe();
     render();
+
+    // Tambahkan di dalam <script type="module">
+async function subscribeToOrders() {
+  supabase
+    .channel('realtime:orders')
+    .on('postgres_changes', { 
+      event: 'INSERT', 
+      schema: 'public', 
+      table: 'orders' 
+    }, (payload) => {
+      // payload.new berisi data pesanan yang baru saja masuk
+      const order = payload.new;
+      
+      // Notifikasi browser (Penting agar driver sadar ada order)
+      if (Notification.permission === "granted") {
+        new Notification("Order Baru!", {
+          body: `${order.nama} ingin jemput di ${order.jemput}`
+        });
+      }
+      
+      // Refresh tampilan list order untuk driver
+      renderOrders(); 
+    })
+    .subscribe();
+}
+
+// Jalankan saat aplikasi dibuka
+subscribeToOrders();
+
+// Minta izin notifikasi saat tombol "Ambil Order" atau saat aplikasi pertama dibuka
+if (Notification.permission !== "granted") {
+  Notification.requestPermission();
+}
+
+async function renderOrders() {
+  const { data } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
+  
+  // Ambil hanya order yang statusnya 'baru'
+  const orderBaru = data.filter(o => o.status === 'baru');
+  
+  const drvPanel = $('#drv-panel-order');
+  if (drvPanel) {
+    drvPanel.innerHTML = orderBaru.map(o => `
+      <div class="bg-yellow-50 border border-yellow-200 p-4 rounded-2xl shadow-md">
+        <h3 class="font-bold text-lg">Order Baru!</h3>
+        <p><b>Nama:</b> ${o.nama}</p>
+        <p><b>Jemput:</b> ${o.jemput}</p>
+        <p><b>Tujuan:</b> ${o.tujuan}</p>
+        <button onclick="ambilOrder('${o.id}')" class="mt-3 w-full bg-green-600 text-white py-2 rounded-xl">Ambil Order</button>
+      </div>
+    `).join('');
+  }
+}
+
+
+    
   </script>
 </body>
 </html>
