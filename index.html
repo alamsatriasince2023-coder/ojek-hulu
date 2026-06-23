@@ -5,80 +5,110 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ojek Hulu Putussibau</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+  </style>
 </head>
-<body class="bg-slate-50 font-sans pb-20">
-  <div class="max-w-xl mx-auto">
-    <div class="flex gap-2 p-4 bg-white shadow-sm sticky top-0 z-50">
-      <button id="btn-nav-pelanggan" class="flex-1 py-2 bg-green-600 text-white rounded-xl font-bold">Penumpang</button>
-      <button id="btn-nav-driver" class="flex-1 py-2 bg-slate-200 rounded-xl font-bold">Driver</button>
-    </div>
+<body class="bg-slate-100 font-sans pb-24">
 
-    <div id="panel-penumpang" class="p-4 space-y-4">
-      <form id="form-pesan" class="bg-white p-4 rounded-2xl border shadow-sm space-y-3">
-        <h3 class="font-bold text-sm">Pesan Sekarang</h3>
-        <input id="in-nama" placeholder="Nama" class="w-full bg-slate-100 p-3 rounded-xl text-sm" required>
-        <input id="in-hp" placeholder="No HP" class="w-full bg-slate-100 p-3 rounded-xl text-sm" required>
-        <input id="in-jemput" placeholder="Jemput" class="w-full bg-slate-100 p-3 rounded-xl text-sm" required>
-        <input id="in-tujuan" placeholder="Tujuan" class="w-full bg-slate-100 p-3 rounded-xl text-sm" required>
-        <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold">Pesan</button>
-      </form>
-      <div id="list-riwayat" class="space-y-3"></div>
-    </div>
-
-    <div id="panel-driver" class="hidden p-4">
-      <h2 class="font-bold text-lg mb-4">Order Masuk</h2>
-      <div id="list-order-driver" class="space-y-3"></div>
-    </div>
+  <div class="fixed top-0 w-full z-50 p-4 bg-white shadow-md flex gap-2">
+    <button id="btn-penumpang" class="flex-1 py-3 bg-green-600 text-white rounded-xl font-bold shadow-lg">Penumpang</button>
+    <button id="btn-driver" class="flex-1 py-3 bg-gray-200 rounded-xl font-bold">Driver</button>
   </div>
+
+  <main class="pt-24 px-4 max-w-lg mx-auto">
+    <div id="panel-penumpang">
+      <div class="bg-green-700 text-white p-6 rounded-3xl shadow-xl mb-6">
+        <h2 class="text-xl font-bold">Halo, Pelanggan!</h2>
+        <p class="text-green-100">Mau kemana hari ini?</p>
+      </div>
+
+      <form id="form-pesan" class="glass-card p-5 rounded-3xl shadow-sm border space-y-4">
+        <input id="in-nama" placeholder="Nama Anda" class="w-full p-4 bg-gray-50 rounded-2xl border" required>
+        <input id="in-hp" placeholder="Nomor HP/WA" class="w-full p-4 bg-gray-50 rounded-2xl border" required>
+        <input id="in-jemput" placeholder="Titik Jemput" class="w-full p-4 bg-gray-50 rounded-2xl border" required>
+        <input id="in-tujuan" placeholder="Lokasi Tujuan" class="w-full p-4 bg-gray-50 rounded-2xl border" required>
+        <input id="in-jarak" type="number" placeholder="Jarak (KM)" class="w-full p-4 bg-gray-50 rounded-2xl border" oninput="hitungHarga()">
+        
+        <div class="p-4 bg-green-50 rounded-2xl border border-green-200">
+          <p class="text-sm text-green-700 font-bold">Estimasi Harga:</p>
+          <h3 id="display-harga" class="text-2xl font-black text-green-800">Rp 0</h3>
+        </div>
+        
+        <button class="w-full py-4 bg-green-600 text-white rounded-2xl font-bold text-lg shadow-lg hover:bg-green-700 transition">Pesan Sekarang</button>
+      </form>
+    </div>
+
+    <div id="panel-driver" class="hidden space-y-4">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">📢 Order Masuk</h2>
+      <div id="list-order" class="space-y-4"></div>
+    </div>
+  </main>
 
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-    const supabase = createClient("https://mrycbenqqpltlovtzgod.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1yeWNiZW5xcXBsdGxvdnR6Z29kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyMzAxMTEsImV4cCI6MjA5NzgwNjExMX0.7wEMU_SioH4sGgBxfS8mPeweKjPwxWGC4gR6N7DQXmU");
+    const supabase = createClient("GANTI_URL_SUPABASE", "GANTI_KEY_SUPABASE");
+    const sound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
 
     // Navigasi
-    document.getElementById('btn-nav-pelanggan').addEventListener('click', () => {
+    document.getElementById('btn-penumpang').onclick = () => {
       document.getElementById('panel-penumpang').classList.remove('hidden');
       document.getElementById('panel-driver').classList.add('hidden');
-    });
-
-    document.getElementById('btn-nav-driver').addEventListener('click', () => {
+    };
+    
+    document.getElementById('btn-driver').onclick = () => {
       document.getElementById('panel-penumpang').classList.add('hidden');
       document.getElementById('panel-driver').classList.remove('hidden');
-      loadOrderDriver();
-    });
+      loadOrders();
+    };
 
-    // Form Pesan
-    document.getElementById('form-pesan').addEventListener('submit', async (e) => {
+    // Kalkulator Harga
+    window.hitungHarga = () => {
+      const km = document.getElementById('in-jarak').value || 0;
+      const harga = 5000 + (km * 3000);
+      document.getElementById('display-harga').innerText = `Rp ${harga.toLocaleString()}`;
+      return harga;
+    };
+
+    // Kirim Order
+    document.getElementById('form-pesan').onsubmit = async (e) => {
       e.preventDefault();
       await supabase.from('orders').insert([{
         nama: document.getElementById('in-nama').value,
         hp: document.getElementById('in-hp').value,
         jemput: document.getElementById('in-jemput').value,
         tujuan: document.getElementById('in-tujuan').value,
+        estimasi: hitungHarga(),
         status: 'baru'
       }]);
-      alert('Pesanan dikirim!');
-    });
+      alert('Order terkirim!');
+    };
 
-    // Fungsi Driver
-    async function loadOrderDriver() {
+    // Driver Load
+    async function loadOrders() {
       const { data } = await supabase.from('orders').select('*').eq('status', 'baru');
-      const container = document.getElementById('list-order-driver');
-      container.innerHTML = (data || []).map(o => `
-        <div class="bg-white p-4 rounded-xl border">
-          <p class="font-bold">${o.nama}</p>
-          <p class="text-sm">${o.jemput} ➔ ${o.tujuan}</p>
-          <button onclick="handleAmbil('${o.id}')" class="w-full bg-green-600 text-white py-2 mt-2 rounded-lg">Ambil</button>
+      const list = document.getElementById('list-order');
+      list.innerHTML = (data || []).map(o => `
+        <div class="bg-white p-5 rounded-3xl shadow-md border-l-8 border-green-500">
+          <p class="font-bold text-lg">${o.nama}</p>
+          <p class="text-sm text-gray-600">Jemput: ${o.jemput}</p>
+          <p class="text-sm text-gray-600 mb-3">Tujuan: ${o.tujuan}</p>
+          <p class="text-green-600 font-bold mb-3">Harga: Rp ${o.estimasi?.toLocaleString()}</p>
+          <button onclick="ambil('${o.id}')" class="w-full py-3 bg-black text-white rounded-xl font-bold">Ambil Order</button>
         </div>
       `).join('');
     }
 
-    // Fungsi Global untuk Tombol Dinamis
-    window.handleAmbil = async (id) => {
+    window.ambil = async (id) => {
       await supabase.from('orders').update({ status: 'diambil' }).eq('id', id);
-      loadOrderDriver();
-      alert('Order diambil!');
+      loadOrders();
     };
+
+    // Realtime Notif
+    supabase.channel('orders').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, () => {
+      sound.play();
+      loadOrders();
+    }).subscribe();
   </script>
 </body>
 </html>
