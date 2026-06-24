@@ -59,12 +59,14 @@ document.getElementById('email').value,
 document.getElementById('password').value
 );
 
-console.log(result);
+alert(JSON.stringify(result,null,2));
 
 if(result.error){
 alert(result.error.message);
 return;
 }
+
+alert('LOGIN BERHASIL');
 
 location.href='customer.html';
 
