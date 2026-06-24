@@ -77,11 +77,7 @@ e.preventDefault();
 
 const result = await registerUser(
 document.getElementById('email').value,
-document.getElementById('password').value,
-{
-full_name: document.getElementById('full-name').value,
-phone: document.getElementById('phone').value
-}
+document.getElementById('password').value
 );
 
 console.log(result);
