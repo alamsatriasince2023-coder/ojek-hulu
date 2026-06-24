@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Customer</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+
+<div class="p-5">
+
+<h1
+id="welcome"
+class="text-2xl font-bold"
+>
+Loading...
+</h1>
+
+</div>
+
+<script type="module">
+
+import {
+getProfile
+} from './js/auth.js';
+
+const profile = await getProfile();
+
+if(!profile){
+
+location.href='login.html';
+
+}
+
+document.getElementById('welcome')
+.innerText =
+`Halo ${profile.full_name}`;
+
+</script>
+
+</body>
+</html>
