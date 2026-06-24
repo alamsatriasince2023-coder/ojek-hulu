@@ -9,7 +9,10 @@
 <body class="bg-gray-100">
 <div class="max-w-md mx-auto min-h-screen p-5">
 <div class="bg-white rounded-3xl shadow p-6">
-<h1 id="welcome" class="text-2xl font-bold mb-2">
+<h1
+id="welcome"
+class="text-2xl font-bold mb-2"
+>
 Loading...
 </h1>
 <p class="text-gray-500 mb-6">
@@ -17,23 +20,23 @@ Selamat datang di Ojek Hulu
 </p>
 
 <button
-id=“btn-order”
-class=“w-full bg-green-600 text-white py-3 rounded-xl font-bold mb-3”
+id=“btn-order"
+class=“w-full bg-green-600 text-white py-3 rounded-xl font-bold mb-3"
 
 🚕 Pesan Ojek
 <button
-id=“btn-history”
-class=“w-full bg-blue-600 text-white py-3 rounded-xl font-bold mb-3”
+id=“btn-history"
+class=“w-full bg-blue-600 text-white py-3 rounded-xl font-bold mb-3"
 
 📋 Riwayat Order
 <button
-id=“btn-profile”
-class=“w-full bg-gray-700 text-white py-3 rounded-xl font-bold mb-3”
+id=“btn-profile"
+class=“w-full bg-gray-700 text-white py-3 rounded-xl font-bold mb-3"
 
 👤 Profil Saya
 <button
-id=“btn-logout”
-class=“w-full bg-red-600 text-white py-3 rounded-xl font-bold”
+id=“btn-logout"
+class=“w-full bg-red-600 text-white py-3 rounded-xl font-bold"
 
 🚪 Logout
 </div>
@@ -45,26 +48,26 @@ logoutUser
 } from './js/auth.js';
 const user = await getCurrentUser();
 if(!user){
-    location.href='login.html';
+location.href='login.html';
 }
 document.getElementById('welcome').innerText =
 `Halo ${user.email}`;
 document.getElementById('btn-order')
 .addEventListener('click', ()=>{
-    location.href='order.html';
+location.href='order.html';
 });
 document.getElementById('btn-history')
 .addEventListener('click', ()=>{
-    alert('Modul Riwayat Order segera dibuat');
+alert('Modul Riwayat Order segera dibuat');
 });
 document.getElementById('btn-profile')
 .addEventListener('click', ()=>{
-    alert('Modul Profil segera dibuat');
+alert('Modul Profil segera dibuat');
 });
 document.getElementById('btn-logout')
 .addEventListener('click', async()=>{
-    await logoutUser();
-    location.href='login.html';
+await logoutUser();
+location.href='login.html';
 });
 </script>
 </body>
