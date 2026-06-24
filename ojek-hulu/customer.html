@@ -52,23 +52,40 @@ location.href='login.html';
 }
 document.getElementById('welcome').innerText =
 `Halo ${user.email}`;
-document.getElementById('btn-order')
-.addEventListener('click', ()=>{
-location.href='order.html';
-});
-document.getElementById('btn-history')
-.addEventListener('click', ()=>{
-alert('Modul Riwayat Order segera dibuat');
-});
-document.getElementById('btn-profile')
-.addEventListener('click', ()=>{
-alert('Modul Profil segera dibuat');
-});
-document.getElementById('btn-logout')
-.addEventListener('click', async()=>{
-await logoutUser();
-location.href='login.html';
-});
+const btnOrder = document.getElementById('btn-order');
+const btnHistory = document.getElementById('btn-history');
+const btnProfile = document.getElementById('btn-profile');
+const btnLogout = document.getElementById('btn-logout');
+
+console.log('btnOrder', btnOrder);
+console.log('btnHistory', btnHistory);
+console.log('btnProfile', btnProfile);
+console.log('btnLogout', btnLogout);
+
+if(btnOrder){
+    btnOrder.addEventListener('click', ()=>{
+        location.href='order.html';
+    });
+}
+
+if(btnHistory){
+    btnHistory.addEventListener('click', ()=>{
+        alert('Modul Riwayat Order segera dibuat');
+    });
+}
+
+if(btnProfile){
+    btnProfile.addEventListener('click', ()=>{
+        alert('Modul Profil segera dibuat');
+    });
+}
+
+if(btnLogout){
+    btnLogout.addEventListener('click', async()=>{
+        await logoutUser();
+        location.href='login.html';
+    });
+}
 </script>
 </body>
 </html>
