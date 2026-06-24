@@ -1,144 +1,118 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ojek Hulu Modern</title>
+    <title>Ojek Hulu Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .active-btn { background-color: #16a34a !important; color: white; }
-    </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>.active-nav { background-color: #16a34a !important; color: white; }</style>
 </head>
-<body class="bg-gray-50 font-sans pb-24">
+<body class="bg-gray-50 pb-20">
 
     <nav class="fixed top-0 w-full bg-white shadow-md z-50 p-4 flex gap-2">
-        <button id="nav-p" class="active-btn flex-1 py-3 rounded-2xl font-bold transition">Penumpang</button>
-        <button id="nav-d" class="flex-1 py-3 bg-gray-200 rounded-2xl font-bold transition">Driver</button>
+        <button id="nav-p" class="active-nav flex-1 py-3 rounded-xl font-bold">Penumpang</button>
+        <button id="nav-d" class="flex-1 py-3 bg-gray-200 rounded-xl font-bold">Driver</button>
     </nav>
 
     <main class="pt-24 px-4 max-w-md mx-auto space-y-6">
-        <div id="panel-p" class="space-y-4">
-            <div class="bg-gradient-to-r from-green-700 to-green-500 p-6 rounded-3xl text-white shadow-lg">
-                <p class="opacity-80">Saldo Anda</p>
-                <h1 class="text-3xl font-black">Rp 125.000</h1>
-            </div>
+        <div id="panel-login" class="bg-white p-6 rounded-3xl shadow-sm border hidden">
+            <h2 class="font-bold text-lg mb-4">Login Driver</h2>
+            <input id="email-d" type="email" placeholder="Email" class="w-full p-4 bg-gray-50 rounded-xl border mb-2">
+            <input id="pass-d" type="password" placeholder="Password" class="w-full p-4 bg-gray-50 rounded-xl border mb-4">
+            <button id="btn-login" class="w-full py-3 bg-black text-white rounded-xl font-bold">Masuk</button>
+        </div>
 
+        <div id="panel-p" class="space-y-4">
             <form id="form-pesan" class="bg-white p-6 rounded-3xl shadow-sm border space-y-4">
-                <h2 class="font-bold text-lg">Pesan Perjalanan</h2>
-                <input id="in-nama" placeholder="Nama Anda" class="w-full p-4 bg-gray-50 rounded-xl border" required>
-                <input id="in-jemput" placeholder="Titik Jemput" class="w-full p-4 bg-gray-50 rounded-xl border" required>
+                <input id="in-nama" placeholder="Nama" class="w-full p-4 bg-gray-50 rounded-xl border" required>
+                <input id="in-jemput" placeholder="Jemput" class="w-full p-4 bg-gray-50 rounded-xl border" required>
                 <input id="in-tujuan" placeholder="Tujuan" class="w-full p-4 bg-gray-50 rounded-xl border" required>
                 <input id="in-km" type="number" placeholder="Jarak (KM)" class="w-full p-4 bg-gray-50 rounded-xl border" oninput="updateHarga()">
-                
-                <div class="flex justify-between items-center bg-green-50 p-4 rounded-xl border border-green-200">
-                    <span class="text-green-700 font-bold">Estimasi:</span>
-                    <span id="label-harga" class="text-xl font-black text-green-900">Rp 0</span>
-                </div>
-                
-                <button class="w-full py-4 bg-green-600 text-white rounded-2xl font-bold text-lg hover:bg-green-700 transition">Pesan Sekarang</button>
+                <div id="map" class="h-64 w-full rounded-2xl border"></div>
+                <button class="w-full py-4 bg-green-600 text-white rounded-2xl font-bold">Pesan Sekarang</button>
             </form>
-            <div id="map" class="h-64 w-full rounded-2xl border mt-4"></div>
         </div>
 
         <div id="panel-d" class="hidden space-y-4">
-            <h2 class="font-bold text-xl">📢 Order Masuk</h2>
+            <h2 class="font-bold text-lg">Order Masuk</h2>
             <div id="list-order" class="space-y-4"></div>
         </div>
     </main>
 
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-        const supabase = createClient("https://mrycbenqqpltlovtzgod.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1yeWNiZW5xcXBsdGxvdnR6Z29kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyMzAxMTEsImV4cCI6MjA5NzgwNjExMX0.7wEMU_SioH4sGgBxfS8mPeweKjPwxWGC4gR6N7DQXmU");
+        const supabase = createClient("GANTI_URL_SUPABASE", "GANTI_KEY_SUPABASE");
         const bell = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
 
-        const supabase = createClient("...", "...");
+        let user = null;
+        const map = L.map('map').setView([0.8443, 112.9234], 14);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
+        const marker = L.marker([0.8443, 112.9234], { draggable: true }).addTo(map);
 
-          // --- TEMPELKAN KODE INI ---
-          const map = L.map('map').setView([0.8443, 112.9234], 14); // Koordinat Putussibau
-          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-              attribution: '© OpenStreetMap'
-          }).addTo(map);
-        
-          const marker = L.marker([0.8443, 112.9234], { draggable: true }).addTo(map);
-        
-          marker.on('moveend', function(e) {
-              const pos = e.target.getLatLng();
-              console.log("Koordinat Jemput:", pos.lat, pos.lng);
-              // Nanti kita akan masukkan lat & lng ini ke input form secara otomatis
-          });
-          // --- SELESAI ---
-
-        // Navigasi Logic
-        const navP = document.getElementById('nav-p');
-        const navD = document.getElementById('nav-d');
-
-        navP.onclick = () => {
+        // Navigasi
+        document.getElementById('nav-p').onclick = () => {
             document.getElementById('panel-p').classList.remove('hidden');
             document.getElementById('panel-d').classList.add('hidden');
-            navP.classList.add('active-btn');
-            navD.classList.remove('active-btn');
-            navD.classList.add('bg-gray-200');
+            document.getElementById('nav-p').classList.add('active-nav');
+            document.getElementById('nav-d').classList.remove('active-nav');
         };
 
-        navD.onclick = () => {
-            document.getElementById('panel-p').classList.add('hidden');
-            document.getElementById('panel-d').classList.remove('hidden');
-            navD.classList.add('active-btn');
-            navP.classList.remove('active-btn');
-            navP.classList.add('bg-gray-200');
-            loadOrders();
+        document.getElementById('nav-d').onclick = () => {
+            if (!user) {
+                document.getElementById('panel-p').classList.add('hidden');
+                document.getElementById('panel-login').classList.remove('hidden');
+            } else {
+                document.getElementById('panel-d').classList.remove('hidden');
+                document.getElementById('panel-p').classList.add('hidden');
+            }
+            document.getElementById('nav-d').classList.add('active-nav');
+            document.getElementById('nav-p').classList.remove('active-nav');
         };
 
-        // Estimasi Harga
-        window.updateHarga = () => {
-            const km = document.getElementById('in-km').value || 0;
-            const harga = 5000 + (km * 3000);
-            document.getElementById('label-harga').innerText = `Rp ${harga.toLocaleString()}`;
-            return harga;
+        // Login
+        document.getElementById('btn-login').onclick = async () => {
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: document.getElementById('email-d').value,
+                password: document.getElementById('pass-d').value
+            });
+            if (error) alert("Login gagal!"); else { user = data.user; alert("Login berhasil!"); location.reload(); }
         };
 
-        // Kirim Order
+        // Pesan
         document.getElementById('form-pesan').onsubmit = async (e) => {
             e.preventDefault();
+            const pos = marker.getLatLng();
             await supabase.from('orders').insert([{
                 nama: document.getElementById('in-nama').value,
                 jemput: document.getElementById('in-jemput').value,
                 tujuan: document.getElementById('in-tujuan').value,
-                estimasi: updateHarga(),
-                status: 'baru'
+                lat: pos.lat, lng: pos.lng, status: 'baru'
             }]);
-            alert('Pesanan Terkirim!');
-            document.getElementById('form-pesan').reset();
+            alert('Pesanan terkirim!');
         };
 
         // Driver List
         async function loadOrders() {
             const { data } = await supabase.from('orders').select('*').eq('status', 'baru');
             document.getElementById('list-order').innerHTML = (data || []).map(o => `
-                <div class="bg-white p-5 rounded-2xl shadow-sm border-l-8 border-green-500">
-                    <p class="font-bold text-lg">${o.nama}</p>
-                    <p class="text-sm text-gray-500">${o.jemput} ➔ ${o.tujuan}</p>
-                    <p class="text-green-600 font-bold my-2">Estimasi: Rp ${o.estimasi.toLocaleString()}</p>
-                    <button onclick="ambil('${o.id}')" class="w-full py-3 bg-black text-white rounded-xl font-bold">Ambil Order</button>
+                <div class="bg-white p-5 rounded-2xl border-l-8 border-green-500">
+                    <p class="font-bold">${o.nama}</p>
+                    <p class="text-sm text-gray-500">${o.jemput} ke ${o.tujuan}</p>
+                    <button onclick="window.ambil('${o.id}')" class="w-full mt-3 py-2 bg-black text-white rounded-xl font-bold">Ambil</button>
                 </div>
             `).join('');
         }
 
         window.ambil = async (id) => {
-            await supabase.from('orders').update({ status: 'diambil' }).eq('id', id);
-            alert('Order Diambil!');
+            await supabase.from('orders').update({ status: 'diambil', driver_id: user.id }).eq('id', id);
+            alert('Order diambil!');
             loadOrders();
         };
 
-        // Notifikasi & Realtime
         supabase.channel('orders').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, () => {
-            bell.play();
-            if(!document.getElementById('panel-d').classList.contains('hidden')) loadOrders();
+            bell.play(); loadOrders();
         }).subscribe();
     </script>
 </body>
