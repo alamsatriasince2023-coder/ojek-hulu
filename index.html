@@ -51,6 +51,36 @@
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
         const marker = L.marker([0.8443, 112.9234], { draggable: true }).addTo(map);
 
+        window.loginDriver = async () => {
+            const email = document.getElementById('email-d').value;
+            const password = document.getElementById('pass-d').value;
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) {
+                alert("Login gagal: " + error.message);
+            } else {
+                driver = data.user;
+                alert("Login berhasil sebagai Driver!");
+                document.getElementById('panel-login').classList.add('hidden');
+                document.getElementById('panel-d').classList.remove('hidden');
+                loadOrders();
+            }
+        };
+
+        // FUNGSI AMBIL ORDER (DENGAN PROTEKSI DRIVER)
+        window.ambil = async (id) => {
+            if (!driver) return alert("Anda harus login sebagai Driver terlebih dahulu!");
+            
+            const { error } = await supabase.from('orders')
+                .update({ status: 'diambil', driver_id: driver.id })
+                .eq('id', id);
+            
+            if (error) alert("Gagal mengambil order.");
+            else {
+                alert("Order berhasil diambil!");
+                loadOrders();
+            }
+        };
+
         // Navigasi
         document.getElementById('nav-p').onclick = () => {
             document.getElementById('panel-p').classList.remove('hidden');
