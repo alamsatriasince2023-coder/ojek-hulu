@@ -19,21 +19,21 @@ Loading...
 
 <script type="module">
 
+<script type="module">
+
 import {
-getProfile
+getCurrentUser
 } from './js/auth.js';
 
-const profile = await getProfile();
+const user = await getCurrentUser();
 
-if(!profile){
-
-location.href='login.html';
-
+if(!user){
+    location.href='login.html';
 }
 
 document.getElementById('welcome')
 .innerText =
-`Halo ${profile.full_name}`;
+`Halo ${user.email}`;
 
 </script>
 
