@@ -84,6 +84,10 @@ phone: document.getElementById('phone').value
 }
 );
 
+console.log(result);
+
+alert(JSON.stringify(result,null,2));
+
 if(result.error){
 alert(result.error.message);
 return;
