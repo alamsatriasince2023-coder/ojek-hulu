@@ -2,74 +2,70 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ojek Hulu Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <link rel="manifest" href="manifest.json">
-<script>
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js').then(() => console.log('PWA Registered'));
-    }
-</script>
-
-<style>
-    /* Mengunci agar tampilan pas di HP */
-    body { min-height: 100vh; background-color: #f3f4f6; }
-    
-    /* Tombol Navigasi Aktif */
-    .nav-active { color: #16a34a !important; }
-    
-    /* Efek kartu agar terlihat "timbul" seperti aplikasi native */
-    .card { 
-        background: white; 
-        border-radius: 20px; 
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-    }
-
-    /* Input lebih rapi */
-    input { outline: none; transition: 0.3s; }
-    input:focus { border-color: #16a34a; ring: 2px #16a34a; }
-</style>
-
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').then(() => console.log('PWA Registered'));
+        }
+    </script>
+    <style>
+        body { background-color: #f3f4f6; }
+        .app-container { max-width: 450px; margin: 0 auto; min-height: 100vh; background: white; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+        .nav-btn { display: flex; flex-direction: column; align-items: center; color: #9ca3af; transition: 0.3s; }
+        .nav-btn.active { color: #16a34a; }
+    </style>
 </head>
-<body class="bg-gray-50 pb-20">
-    <nav class="fixed bottom-0 w-full bg-white border-t p-4 flex justify-around z-50">
-        <button id="nav-home" class="flex flex-col items-center text-green-600 font-bold">
-            <span>🏠</span><span class="text-xs">Beranda</span>
-        </button>
-        <button id="nav-history" class="flex flex-col items-center text-gray-400">
-            <span>🕒</span><span class="text-xs">Riwayat</span>
-        </button>
-        <button id="nav-driver" class="flex flex-col items-center text-gray-400">
-            <span>🛵</span><span class="text-xs">Driver</span>
-        </button>
-    </nav>
-    <main class="pt-24 px-4 max-w-md mx-auto space-y-6">
-        <div id="panel-login" class="bg-white p-6 rounded-3xl shadow-sm border hidden">
-            <h2 class="font-bold text-lg mb-4">Login Driver</h2>
-            <input id="email-d" type="email" placeholder="Email" class="w-full p-4 bg-gray-50 rounded-xl border mb-2">
-            <input id="pass-d" type="password" placeholder="Password" class="w-full p-4 bg-gray-50 rounded-xl border mb-4">
-            <button id="btn-login" class="w-full py-3 bg-black text-white rounded-xl font-bold">Masuk</button>
-        </div>
-        <div id="panel-p" class="space-y-4">
-            <form id="form-pesan" class="bg-white p-6 rounded-3xl shadow-sm border space-y-4">
-                <input id="in-nama" placeholder="Nama" class="w-full p-4 bg-gray-50 rounded-xl border" required>
-                <div id="map" class="h-64 w-full rounded-2xl border"></div>
-                <button class="w-full py-4 bg-green-600 text-white rounded-2xl font-bold">Pesan Sekarang</button>
-            </form>
-            <div class="mt-8">
-                <h3 class="font-bold mb-4">Riwayat Perjalanan</h3>
-                <div id="list-riwayat"></div>
-            </div>
+<body>
 
+    <main id="app-container" class="app-container pb-24 px-4 pt-6">
+        
+        <!-- Panel Login -->
+        <div id="panel-login" class="hidden py-10">
+            <h2 class="font-bold text-2xl mb-6">Login Driver</h2>
+            <input id="email-d" type="email" placeholder="Email" class="w-full p-4 bg-gray-100 rounded-2xl border mb-3">
+            <input id="pass-d" type="password" placeholder="Password" class="w-full p-4 bg-gray-100 rounded-2xl border mb-6">
+            <button id="btn-login" class="w-full py-4 bg-black text-white rounded-2xl font-bold">Masuk Sekarang</button>
         </div>
+
+        <!-- Panel Penumpang -->
+        <div id="panel-p" class="space-y-6">
+            <h1 class="text-2xl font-black text-green-700">Ojek Hulu</h1>
+            <form id="form-pesan" class="space-y-4">
+                <input id="in-nama" placeholder="Nama Anda" class="w-full p-4 bg-gray-100 rounded-2xl border" required>
+                <div id="map" class="h-64 w-full rounded-3xl border overflow-hidden shadow-inner"></div>
+                <button class="w-full py-4 bg-green-600 text-white rounded-2xl font-bold shadow-lg shadow-green-200">Pesan Sekarang</button>
+            </form>
+            <div id="panel-history" class="hidden">
+                <h3 class="font-bold text-lg mb-4">Riwayat Perjalanan</h3>
+                <div id="list-riwayat" class="space-y-2"></div>
+            </div>
+        </div>
+
+        <!-- Panel Driver -->
         <div id="panel-d" class="hidden space-y-4">
-            <h2 class="font-bold text-lg">Order Masuk</h2>
+            <h2 class="font-bold text-xl pt-4">Orderan Masuk</h2>
             <div id="list-order" class="space-y-4"></div>
         </div>
     </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 w-full max-w-[450px] left-1/2 -translate-x-1/2 bg-white border-t border-gray-100 p-4 flex justify-around z-50">
+        <button id="nav-home" class="nav-btn active">
+            <span class="text-xl">🏠</span><span class="text-[10px] font-bold">Beranda</span>
+        </button>
+        <button id="nav-history" class="nav-btn">
+            <span class="text-xl">🕒</span><span class="text-[10px] font-bold">Riwayat</span>
+        </button>
+        <button id="nav-driver" class="nav-btn">
+            <span class="text-xl">🛵</span><span class="text-[10px] font-bold">Driver</span>
+        </button>
+    </nav>
+
     <script type="module" src="js/main.js"></script>
 </body>
 </html>
