@@ -2,19 +2,12 @@ import { supabase } from './api.js';
 
 export async function registerUser(
 email,
-password,
-meta
+password
 ){
 
 return await supabase.auth.signUp({
-
 email,
-password,
-
-options:{
-data:meta
-}
-
+password
 });
 
 }
