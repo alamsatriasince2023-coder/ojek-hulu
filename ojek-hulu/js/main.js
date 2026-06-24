@@ -6,6 +6,26 @@ import { loadHistory } from './history.js';
 const marker = initMap();
 let user = null;
 
+// Tambahkan logika ini di js/main.js
+const navButtons = [
+    { id: 'nav-home', panel: 'panel-p' },
+    { id: 'nav-driver', panel: 'panel-d' },
+    { id: 'nav-history', panel: 'panel-history' } // Pastikan panel-history ada di HTML
+];
+
+navButtons.forEach(btn => {
+    document.getElementById(btn.id).onclick = () => {
+        // Sembunyikan semua panel
+        document.querySelectorAll('main > div').forEach(p => p.classList.add('hidden'));
+        // Tampilkan panel yang dipilih
+        document.getElementById(btn.panel).classList.remove('hidden');
+        
+        // Ganti warna icon aktif
+        document.querySelectorAll('nav button').forEach(b => b.classList.replace('text-green-600', 'text-gray-400'));
+        document.getElementById(btn.id).classList.replace('text-gray-400', 'text-green-600');
+    };
+});
+
 // Navigasi
 document.getElementById('nav-p').onclick = () => {
     document.getElementById('panel-p').classList.remove('hidden');
