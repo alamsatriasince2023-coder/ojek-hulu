@@ -13,6 +13,26 @@
     }
 </script>
 
+<style>
+    /* Mengunci agar tampilan pas di HP */
+    body { min-height: 100vh; background-color: #f3f4f6; }
+    
+    /* Tombol Navigasi Aktif */
+    .nav-active { color: #16a34a !important; }
+    
+    /* Efek kartu agar terlihat "timbul" seperti aplikasi native */
+    .card { 
+        background: white; 
+        border-radius: 20px; 
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+
+    /* Input lebih rapi */
+    input { outline: none; transition: 0.3s; }
+    input:focus { border-color: #16a34a; ring: 2px #16a34a; }
+</style>
+
 </head>
 <body class="bg-gray-50 pb-20">
     <nav class="fixed bottom-0 w-full bg-white border-t p-4 flex justify-around z-50">
